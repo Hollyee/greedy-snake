@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .ui-dialog{
+            position: absolute;
+            border: 1px solid black;
+            background:white;
+            z-index:2;
+        }
+        .ui-dialog-title{
+            height: 40px;
+            background-color: green;
+            position: relative;
+            /*溢出隐藏,清除浮动*/
+            overflow: hidden;
+        }
+        .ui-dialog-title span{
+            color: white;
+            padding: 8px;
+            float: left;
+            width: 90%;
+        }
+        .ui-dialog-title i{
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            color: white;
+            border: 1px solid white;
+            text-align: center;
+            line-height: 20px;
+            font-weight: bold;
+        }
+        .ui-dialog-content{
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+<button>按钮1</button>
+<button>按钮2</button>
+<button>按钮3</button>
+
+<script>
+    <!--设置默认参数-->
+    function Dialog() {
+        this.oDiaglog = null;
+        this.backdrop = null;
+        this.settings = {
+            w:300,
+            h:300,
+            title: "shenm ",
+            content:"this is content area",
+            drag:false
+        }
+    }
+    Dialog.prototype.init = function (options) {
+        extend(this.settings, options);
+        //对象创建后首次执行到这里是成立
+        if(this.data[this.settings.index] == undefined){
+            //创建弹框
+            this.createDialog();
+            //设置位置
+            this.setPos();
+            //创建遮罩
+            if(this.settings.backdrop){
+                this.createBackDrop()
+            }
+            if(this.settings.drag){
+                this.Drag();
+            }
+            this.data[this.settings.index]= true;
+            //    关闭弹窗
+            this.closeDialog();
+        };
+    }
+    //单独封装一个方法，动态地创建出弹出框
+    Dialog.prototype.createDialog = function () {
+        //    先创建出相应的div
+        this.oDiaglog = document.createElement("div");
+        //给这个div一个名字
+        this.oDiaglog.className = 'ui-dialog';
+        this.oDiaglog.innerHTML =
+            '    <div class="ui-dialog-title">\n' +
+            '        <span>'+this.settings.title+'</span>\n' +
+            '        <!--<i>定义全局属性-->\n' +
+            '        <i>x</i>\n' +
+            '    </div>\n' +
+            '    <div class="ui-dialog-content">'+this.settings.content+'</div>\n';
+        //将这个元素添加到body中
+        document.body.appendChild(this.oDiaglog);
+    //    设置盒子的宽高
+        this.oDiaglog.style.width = this.settings.w + "px";
+        this.oDiaglog.style.height = this.settings.h + "px";
+    };
+    //可视区的宽高
+    function vw(){
+        return document.documentElement.clientWidth;
+    }
+    function vh(){
+        return document.documentElement.clientHeight;
+    }
+    //封装方法，让弹出框居中
+    Dialog.prototype.setPos = function () {
+    //    居中：（可视区宽高-盒子宽高）/2
+        if(this.settings.pos === "center"){
+            this.oDiaglog.style.left = (vw()- this.oDiaglog.offsetWidth)/2 + "px";//不起作用
+            this.oDiaglog.style.top = (vh()- this.oDiaglog.offsetHeight)/2 + "px";
+        }else if(this.settings.pos === "rightBottom"){
+        //    右下角
+            this.oDiaglog.style.left = vw()- this.oDiaglog.offsetWidth + "px";
+            this.oDiaglog.style.top = vh()- this.oDiaglog.offsetHeight + "px";
+        }
+    }
+    //设置遮罩
+    Dialog.prototype.createBackDrop = function(){
+        //原理：创建一个div,让后把整个可视区给盖住
+        this.oBackdrop = document.createElement("div");
+        this.oBackdrop.style.width = vw() + "px";
+        this.oBackdrop.style.height = vh() + "px";
+        this.oBackdrop.style.backgroundColor = "rgba(0,0,0,0.5)";
+        this.oBackdrop.style.position = "absolute";
+        this.oBackdrop.style.left = 0;
+        this.oBackdrop.style.top = 0;
+        document.body.appendChild(this.oBackdrop);
+    };
+    //设置拖拽效果
+    Dialog.prototype.Drag = function(){
+        var that = this;
+        this.oDiaglog.onmousedown = function (ev) {
+            //鼠标摁下获取当前位置
+            var ev = ev || window.event;
+            that.difX = ev.clientX - that.oDiaglog.offsetLeft;
+            that.difY = ev.clientY - that.oDiaglog.offsetTop;
+            // console.log(that.difX,that.difY);
+            that.oDiaglog.onmousemove = function (ev2) {
+                var ev = ev2 || window.event;
+                that.oDiaglog.style.left = (ev2.clientX - that.difX) + "px";
+                that.oDiaglog.style.top = (ev2.clientY - that.difY) + "px";
+
+            };
+            that.oDiaglog.onmouseup = function () {
+                that.oDiaglog.onmousemove = null;
+                that.oDiaglog.onmouseup = null;
+            }
+        }
+    }
+    //关闭弹窗
+    Dialog.prototype.closeDialog = function () {
+        var oClose = this.oDiaglog.getElementsByTagName("i")[0];
+        var That = this;
+        oClose.onclick = function () {
+        //    this-->oClose
+            document.body.removeChild(That.oDiaglog);
+            //关闭遮罩
+            document.body.removeChild(That.oBackdrop)
+            That.data[That.settings.index] = undefined
+        }
+    };
+    Dialog.prototype.data = {};
+    function extend(obj1,obj2) {
+        for(var attr in obj2){
+            obj1[attr] = obj2[attr]
+        }
+    }
+    var aBtn = document.getElementsByTagName("button");
+    aBtn[0].onclick = function (ev) {
+        var d1 = new Dialog();
+        d1.init({
+            w:300,
+            h:300,
+            pos:"center",
+            index:0,
+            backdrop:true,
+            drag:true,//增加一个拖拽效果
+        })
+    };
+    //点击第二个按钮的时候盒子居中
+    aBtn[1].onclick = function (ev) {
+        var d2 = new Dialog();
+        d2.init({
+            w:300,
+            h:300,
+            pos:"rightBottom",
+            title:"标题",
+            content:"shenmedongxi",
+            index:1
+        })
+    }
+/*
+*防止多次弹窗
+* 解决思路:增加一个开关，但是开关增加到哪？
+* 1.将开关加到btn上 --- 不合理，prototype等方法是通用代码，后面的调用是业务代码，应该在组件中修复，不能在业务中修复
+* 2.加到组件内部，传参，失败--- 每次点击按钮创建的对象不一样（不是同一个d1)，但传入的参数都是一样的
+* 3.把开关加到原型上，原型设data{}来存数据，设置一一对应关系*/
+</script>
+</body>
+</html>

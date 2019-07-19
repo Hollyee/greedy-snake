@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<button type="button" id="start">切换</button>
+		<button type="button" id="stop">停止</button>
+		<script type="text/javascript">
+			var oStart = document.getElementById("start")
+			var oStop = document.getElementById("stop")
+			var timer = null
+			oStart.onclick = function(){
+				clearInterval(timer)
+				timer = setInterval(function(){
+					var num = getRandomInt(1000,1900)
+					// document.body才能更改style
+					document.body.style.background = "url(https://img.infinitynewtab.com/wallpaper/"+num+".jpg) no-repeat"
+					document.body.style.backgroundSize = "100%"
+				},2000)
+					
+			}
+			oStop.onclick = function(){
+				clearInterval(timer)
+			}
+			function getRandomInt(min,max){
+				return Math.floor(Math.random()*(max - min + 1) + min)
+			}
+		</script>
+	</body>
+</html>

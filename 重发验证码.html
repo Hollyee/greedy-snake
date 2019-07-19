@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+	</head>
+	<body>
+		<!-- 
+		 1.一旦点击了按钮，按钮就不可用了
+		 2.点击之后会倒数 setTimeout innerHTML 某个变量
+		 3.倒数为0时重新开始 clearTimeout time = 10
+		 -->
+		<!-- 发送验证码 -->
+		<button type="button" id="btn">发送验证码</button>
+		<script type="text/javascript">
+			var oBtn = document.getElementById("btn")			var time = 10			
+			oBtn.onclick = function(){
+				// 一旦按下之后就让让按钮不可用
+				this.disabled = true
+				sendCode()//记得调用函数
+			}
+			// 递归函数
+			function sendCode(){
+				time--
+				oBtn.innerHTML = time + "s后重新发送"
+				if(time > 0){
+					setTimeout(sendCode,1000)//里面不要加括号
+				}else{
+					oBtn.innerHTML = "重新发送验证码"
+					oBtn.disabled = false;
+					time = 10
+				}
+			}
+		</script>
+	</body>
+</html>

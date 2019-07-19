@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #wrap button,#wrap2 button{
+            width: 60px;
+            height: 30px;
+        }
+        #wrap div,#wrap2 div{
+            width: 300px;
+            height: 100px;
+            border:1px solid red;
+            display: none;
+            margin-top: 10px;
+        }
+        #wrap div.active,#wrap2 div.active{
+            display: block;
+        }
+        /*交叉选择器*/
+        #wrap button.active,#wrap2 button.active{
+            background-color: orangered;
+        }
+    </style>
+</head>
+<body>
+<div id="wrap">
+    <button class="active">btn_1</button>
+    <button>btn_2</button>
+    <button>btn_3</button>
+    <button>btn_4</button>
+    <div class="active">nod_1</div>
+    <div>nod_2</div>
+    <div>nod_3</div>
+    <div>nod_4</div>
+</div>
+<div id="wrap2">
+    <button class="active">btn_1</button>
+    <button>btn_2</button>
+    <button>btn_3</button>
+    <button>btn_4</button>
+    <div class="active">nod_1</div>
+    <div>nod_2</div>
+    <div>nod_3</div>
+    <div>nod_4</div>
+</div>
+<script>
+function changeTab(obj){
+        //    当把鼠标移入到某个btn的时候 先把所有btn背景色设置成白色
+        //    把所有div设置成隐藏
+        for(var j=0;j<this.aBtn.length;j++){
+            this.aBtn[j].style.backgroundColor = "white";
+            this.aDiv[j].style.display = "none"
+        }
+        obj.style.backgroundColor = "orangered";
+        aDiv[obj.index].style.display = "block";
+    }
+//   推荐使用原型的方法去创建函数
+//    a 先定义一个构造函数  b 把公用的方法放到prototype身上
+/*
+* 套路：
+*   1.先把面向过程的代码整理一下，把具体功能的代码封装成函数，不要出现函数嵌套
+*   2.正式修改成面向对象的形式
+*       1.全局变量是属性
+*       2.函数就是方法
+*       3.既不是全局变量也不是函数的代码 单独封装成一个初始化方法
+*   3.bug修复*/
+function Tab(obj) {
+    //this指向t1
+    this.oWrap = document.getElementById(obj);
+    this.aBtn = this.oWrap.getElementsByTagName("button");
+    this.aDiv = this.oWrap.getElementsByTagName("div");//这里别写document,否则效果就没法实现了
+};
+Tab.prototype.init = function() {
+    //this指向t1
+    var that = this
+    for (var i = 0; i < this.aBtn.length; i++) {
+        this.aBtn[i].index = i;
+        this.aBtn[i].onmouseover = function () {
+            //   在这个函数里，this是指向aBtn[i]
+            //   谁调用函数，这个函数的this就指向谁
+            that.changeTab(this)
+
+        }
+    }
+}
+Tab.prototype.changeTab = function (obj) {
+    for(var j=0;j<this.aBtn.length;j++){
+        this.aBtn[j].style.backgroundColor = "white";
+        this.aDiv[j].style.display = "none"
+    }
+    obj.style.backgroundColor = "orangered";
+    this.aDiv[obj.index].style.display = "block";
+}
+var t1 = new Tab("wrap");
+t1.init()
+var t2 = new Tab("wrap2");
+t2.init()
+</script>
+</body>
+</html>

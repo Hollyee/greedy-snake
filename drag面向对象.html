@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #box{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+<div id="box"></div>
+<script>
+    // var oBox = document.getElementById("box");
+    // oBox.onmousedown = function (ev) {
+    //     //先求出盒子离网页的距离
+    //     fnDown()
+    // }
+//面向对象
+    
+    // var difX = null;
+    // var difY = null;
+    // function fnMove(ev2) {
+    //     var ev = ev2 || window.event
+    //     oBox.style.top = ev.clientY - difY + "px";
+    //     oBox.style.left = ev.clientX - difX + "px";
+    // }
+    // function fnUp() {
+    //     document.onmousemove = null;
+    //     document.onmouseup = null
+    // }
+    // function fnDown() {
+    //     var ev = ev || window.event;
+    //     var difX = ev.clientX - oBox.offsetLeft;
+    //     var difY = ev.clientY - oBox.offsetTop;
+    //     document.onmousemove = function (ev2) {
+    //         fnMove(ev2)
+    //     };
+    //     document.onmouseup = function () {
+    //         fnUp()
+    //     }
+
+        /*
+* 套路：
+*   1.先把面向过程的代码整理一下，把具体功能的代码封装成函数，不要出现函数嵌套
+*   2.正式修改成面向对象的形式
+*       1.全局变量是属性
+*       2.函数就是方法
+*       3.既不是全局变量也不是函数的代码 单独封装成一个初始化方法
+*   3.bug修复:修改this指向
+*   */
+        function Drag() {
+            //    属性
+            this.oBox = document.getElementById("box");
+            this.difX = null;
+            this.difY = null;
+        }
+
+        Drag.prototype.fnMove = function (ev2) {
+            var ev = ev2 || window.event
+            this.oBox.style.top = ev.clientY - this.difY + "px";
+            this.oBox.style.left = ev.clientX - this.difX + "px";
+        }
+        Drag.prototype.fnDown = function (ev) {
+            var ev = ev || window.event;
+            this.difX = ev.clientX - this.oBox.offsetLeft;
+            this.difY = ev.clientY - this.oBox.offsetTop;
+            var that = this
+            document.onmousemove = function (ev2) {
+                that.fnMove(ev2)
+            };
+            document.onmouseup = function () {
+                that.fnUp()
+            }
+        }
+        Drag.prototype.fnUp = function(){
+            document.onmousemove = null;
+            document.onmouseup = null
+        }
+        Drag.prototype.init = function () {
+            var that = this
+            this.oBox.onmousedown = function (ev) {
+                that.fnDown()
+            }
+        }
+    var d1 = new Drag();
+    d1.init()
+</script>
+</body>
+</html>

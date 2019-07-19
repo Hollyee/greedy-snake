@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #box,#box2,#box3,#box4{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            background-color: red;
+        }
+        #box2{
+            background-color: blue;
+            left: 110px;
+        }
+        #box3{
+            background-color: orange;
+            left: 220px;
+        }
+        #box4{
+            background-color: black;
+            left: 330px;
+        }
+    </style>
+</head>
+<body>
+<div id="box"></div>
+<div id="box2"></div>
+<div id="box3"></div>
+<div id="box4"></div>
+<script>
+        function Drag() {
+            //因为opinions是局部变量，这里需要设一个全局变量，而且把options里面的东西放到它里边去,它有默认参数
+            this.settings = {
+                beforeDown: function () {},
+                beforeMove: function () {},
+                beforeUp: function () {}
+            };
+            this.oBox = null;
+            this.difX = null;
+            this.difY = null;
+        }
+        Drag.prototype.fnMove = function (ev2) {
+            var ev = ev2 || window.event
+            this.oBox.style.top = ev.clientY - this.difY + "px";
+            this.oBox.style.left = ev.clientX - this.difX + "px";
+        }
+        Drag.prototype.fnDown = function (ev) {
+            var ev = ev || window.event;
+            this.difX = ev.clientX - this.oBox.offsetLeft;
+            this.difY = ev.clientY - this.oBox.offsetTop;
+            var that = this
+            document.onmousemove = function (ev2) {
+                //如果直接在这里使用options是没法找到的,需要用到全局变量
+                that.settings.beforeMove(that.oBox)//that.oBox找到盒子
+                that.fnMove(ev2)
+            };
+            document.onmouseup = function () {
+                that.settings.beforeUp();
+                that.fnUp()
+            }
+        }
+        Drag.prototype.fnUp = function(){
+            document.onmousemove = null;
+            document.onmouseup = null
+        }
+        Drag.prototype.init = function (options) {
+            // console.log(options);
+            //把options里面的方法都拷贝给this.settings
+            extend(this.settings,options)//有合并的意思，把局部变量变成全局变量
+            this.oBox = document.getElementById(options.id)//d2--oBox="box2"
+            var that = this//d2
+            this.oBox.onmousedown = function (ev) {
+                that.settings.beforeDown(this);//全局变量有个beforeDown方法，指向的是init({})的{}
+                that.fnDown(ev)
+            }
+        };
+        function extend(obj1,obj2) {
+            for(var attr in obj2){
+                obj1[attr] = obj2[attr]
+            }
+        }
+    var d1 = new Drag();
+    //    如果没有传入beforeDown这个函数，那么在init内部去调用这个函数就会报错
+    //    解决方案：1.传入一个空函数
+    //    问题：d1没有相应的业务逻辑，但是我们必须传入一个空函数
+    //    实现一个功能：d1没有的逻辑，不用去写，不去传没有意义的参数
+    d1.init({
+        id: "box"
+    })
+    var d2 = new Drag();
+    //按下第二个盒子的时候，往里边添加内容
+    d2.init({
+        id:"box2",
+        beforeDown: function (obj) {
+            obj.innerHTML = "螺钉课堂";
+            obj.style.color = "white"
+        }
+    })
+//    第三个 div 移动的时候改变背景颜色
+    var d3 = new Drag();
+    d3.init({
+        id :"box3",
+        beforeMove: function (obj) {
+            obj.style.backgroundColor = "black";
+        }
+    })
+//    第四个div 鼠标抬起弹出内容
+    var d4 = new Drag();
+    d4.init({
+        id: "box4",
+        beforeUp: function () {
+            alert("确定离开吗？")
+        }
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			#box{
+				width: 150px;
+				height: 200px;
+				background-color: #009F95;
+				position: absolute;
+				left: 400px;
+				top: 100px;
+			}			
+		</style>
+	</head>
+	<body>
+		<div id="box"></div>
+		<div id="box2"></div>
+		<script src="../js/tools.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			var oBox = document.getElementById("box")
+			var arr = []
+			var index = 0
+			for(var i = 30;i >= 0;i -= 3){
+				arr.push(i,-i)
+			}
+			oBox.onclick = function(){
+				oBox.waver = setInterval(function(){
+					oBox.style.left = parseInt(getStyle(oBox,"left")) + arr[index] + "px"
+					index++
+					if(index === arr.length){
+						clearInterval(oBox.waver)
+					}
+				},100)
+				function getStyle(obj,attr){
+					return window.getComputedStyle? window.getComputedStyle(obj)[attr]: obj.currentStyle[attr]
+				}
+			}
+		</script>
+	</body>
+</html>

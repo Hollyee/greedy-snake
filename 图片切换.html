@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			.box{
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="box">
+			<button id="prev" type="button">prev</button>
+			<button id="next" type="button">next</button>
+			<img src="../img/04.jpg" id="pic">
+		</div>
+		<script type="text/javascript">
+			var oPrev = document.getElementById("prev")
+			var oNext = document.getElementById("next")
+			var oPic = document.getElementById("pic")
+			// num = 4如果放在函数内部只会运行一次
+			var num = 4
+			// 点一次,则执行一次
+			oPrev.onclick = function(){
+				num--
+				if(num<=0){
+					num = 1
+				}else{
+					oPic.src = "../img/0"+num+".jpg" 
+				}
+			}
+			oNext.onclick = function(){
+				num++
+				oPic.src = "../img/0"+num+".jpg" 
+			}
+		</script>
+	</body>
+</html>

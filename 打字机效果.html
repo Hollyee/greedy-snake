@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css" id="style-app">
+			
+		</style>
+	</head>
+	<body>
+		<!-- 思路：定义一个非常长的字符串，找到显示它的盒子和样式id,利用setInterval来控制字符串的书写
+		 不断截取字符串。
+		 -->
+		<div id="content">
+			<!-- 这里放显示打字机效果的代码 -->
+				<div id="style-text">
+					
+				</div>
+				<!-- 这里是完成后的弹窗 -->
+				<div id="tooltips" style="display:none">
+						<div id="info">
+							<div class="title">信息</div>
+							<div class="content">恭喜你，中奖了</div>
+							<div class="btn">
+								<button id="confirm">确定</button>
+							</div>
+						</div>
+				</div>
+		</div>
+		<script type="text/javascript">
+			var style_text = `
+					#style-text{
+					width: 300px;
+					height: 460px;
+					border: 5px solid white;
+					background-color: green; 
+					color: white;
+			
+				}
+				#tooltips{
+					width: 100%;
+					height: 100%;
+					background-color: rgba(0,0,0,0.5);
+					position: absolute;
+					top: 0;
+					z-index: 999;
+					display: block!important;
+				}
+				#info{
+					width: 400px;
+					height: 200px;
+					background-color: white;
+					margin: 150px auto;
+				}
+				#info .title{
+					width: 100%;
+					height: 40px;
+					background-color: #009f95;
+					line-height: 40px;
+					color: white;
+					padding-left: 20px;
+					box-sizing: border-box;
+				}
+				#info .btn button{
+					background-color: #009f95;
+					color: white;
+					outline: none;
+					font-size: 10px;
+					width:60px;
+					height: 30px;
+					margin-left: 300px;
+				}
+				#info .content {
+					height: 120px;
+					padding: 20px;
+					box-sizing: border-box;
+				}
+			`
+			var style_app = document.getElementById("style-app")
+			var style_text_obj = document.getElementById("style-text")
+			var n = 1
+			var timer = setInterval(function(){
+				style_text_obj.innerHTML = style_text.substring(0,n)//后来居上,不断覆盖
+				n++
+				style_app.innerHTML = style_text.substring(0,n)
+				if(n === style_text.length){
+					clearInterval(timer)
+					alert("代码书写完成")
+				}
+			},80)
+			
+		</script>
+	</body>
+</html>

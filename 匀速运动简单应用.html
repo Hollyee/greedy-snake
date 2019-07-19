@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style type="text/css">
+			li{
+				list-style: none;
+				width: 50px;
+				height: 50px;
+				background-color: #009F95;
+				position: absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<ul>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>
+		<script src="../js/tools.js"></script>
+		<script>
+			// 需求:移入li做匀速运动
+			var aLi = document.getElementsByTagName("li") 
+			for(var i = 0;i<aLi.length;i++){
+				aLi[i].style.top = i * 60 + "px"//每个li之间相隔10px
+				aLi[i].onmouseover = function(){
+					var This = this//指的是aLi
+					move(this,10,500,"left",10,function(){
+						move(This,-10,0,"left",10)//注意这里的This
+					})
+				}
+			}
+		</script>
+	</body>
+</html>
